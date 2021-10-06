@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hw1/image-provider/image-provider.dart';
 import 'package:provider/provider.dart';
 
+import 'image-provider/background-image.dart';
+
 void main() {
   runApp(ChangeNotifierProvider(
     create: (_) => BackgroundImageProvider(),
@@ -47,6 +49,7 @@ class MyHomePage extends StatelessWidget {
             body: TabBarView(
               children: [
                 GridView.builder(
+                    key: PageStorageKey<int>(1),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                             childAspectRatio: 0.5, crossAxisCount: 2),
@@ -55,23 +58,27 @@ class MyHomePage extends StatelessWidget {
                         .listOfImages
                         .length,
                     itemBuilder: (BuildContext context, int index) {
+                      BackgroundImage image = context
+                          .watch<BackgroundImageProvider>()
+                          .listOfImages[index];
                       return Stack(
                         children: [
                           Positioned.fill(
                             child: Image.network(
-                              context
-                                      .watch<BackgroundImageProvider>()
-                                      .listOfImages[index]
-                                      .link ??
+                              image.link ??
                                   "https://picsum.photos/seed/error/540/1110",
                               fit: BoxFit.cover,
                             ),
                           ),
                           Positioned(
                             child: IconButton(
-                              onPressed: () {},
+                              onPressed: () => context
+                                  .read<BackgroundImageProvider>()
+                                  .changeStateOfImage(index),
                               icon: Icon(
-                                Icons.favorite_border,
+                                !image.isFavorite
+                                    ? Icons.favorite_border
+                                    : Icons.favorite,
                                 color: Colors.white,
                                 size: 30,
                               ),
@@ -82,7 +89,47 @@ class MyHomePage extends StatelessWidget {
                         ],
                       );
                     }),
-                Icon(Icons.favorite)
+                GridView.builder(
+                    key: PageStorageKey<int>(2),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            childAspectRatio: 0.5, crossAxisCount: 2),
+                    itemCount: context
+                        .watch<BackgroundImageProvider>()
+                        .favoriteListOfImages
+                        .length,
+                    itemBuilder: (BuildContext context, int index) {
+                      BackgroundImage image = context
+                          .watch<BackgroundImageProvider>()
+                          .favoriteListOfImages[index];
+                      return Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Image.network(
+                              image.link ??
+                                  "https://picsum.photos/seed/error/540/1110",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            child: IconButton(
+                              onPressed: () => context
+                                  .read<BackgroundImageProvider>()
+                                  .changeStateOfFavImage(index),
+                              icon: Icon(
+                                !image.isFavorite
+                                    ? Icons.favorite_border
+                                    : Icons.favorite,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            ),
+                            top: 10,
+                            right: 10,
+                          ),
+                        ],
+                      );
+                    }),
               ],
             )));
   }
