@@ -17,7 +17,6 @@ class BackgroundImageProvider extends ChangeNotifier {
           "https://picsum.photos/seed/${(i + 1).toString()}/540/1110";
       listOfImages[i].id = i;
     }
-    //print(_favoriteListOfImages.length);
   }
   changeStateOfImage(int id) {
     BackgroundImage backgroundImage = _listOfImages[id];
@@ -32,10 +31,8 @@ class BackgroundImageProvider extends ChangeNotifier {
   changeStateOfFavImage(int index) {
     BackgroundImage backgroundImage = _favoriteListOfImages[index];
     backgroundImage.changeState();
-    backgroundImage.isFavorite
-        ? _favoriteListOfImages.add(backgroundImage)
-        : _favoriteListOfImages
-            .removeWhere((element) => element.id == backgroundImage.id);
+    _favoriteListOfImages
+        .removeWhere((element) => element.id == backgroundImage.id);
     notifyListeners();
   }
 }
